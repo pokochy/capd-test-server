@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}SQL Injection{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>SQL Injection Demo</h2>
+    <p class="muted">POST `/sqli` 또는 GET `/sqli/search` 로 실습할 수 있습니다.</p>
+    <form method="post" action="{{ url_for('sqli') }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" placeholder="admin">
+        <button type="submit">Run Query</button>
+    </form>
+</section>
+<section class="panel">
+    <h3>Product Search</h3>
+    <form method="get" action="{{ url_for('sqli_search') }}">
+        <label for="q">Search</label>
+        <input id="q" name="q" value="{{ q or '' }}" placeholder="Laptop">
+        <button type="submit">Search</button>
+    </form>
+</section>
+{% if query %}
+<section class="panel">
+    <h3>Executed Query</h3>
+    <pre>{{ query }}</pre>
+</section>
+{% endif %}
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if result is not none %}
+<section class="panel">
+    <h3>Result</h3>
+    <pre>{{ result | tojson(indent=2) }}</pre>
+</section>
+{% endif %}
+{% endblock %}

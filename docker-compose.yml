@@ -1,0 +1,25 @@
+version: "3.8"
+
+# ⚠️ INTENTIONALLY VULNERABLE — FOR TESTING ONLY
+# 절대 공인 IP / 외부 접근 가능 환경에서 실행 금지
+
+services:
+  vuln-app:
+    build: .
+    container_name: vuln-app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads      # 업로드 파일 영속화
+      - ./vuln_app.db:/app/vuln_app.db  # DB 영속화
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    restart: unless-stopped
+    # 네트워크 격리 (로컬 테스트 전용)
+    networks:
+      - vuln-net
+
+networks:
+  vuln-net:
+    driver: bridge

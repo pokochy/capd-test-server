@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}VulnApp{% endblock %}</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f4f1ea;
+            --panel: #fffaf2;
+            --ink: #1e1b18;
+            --muted: #6f655d;
+            --line: #d7c9b8;
+            --accent: #b6461d;
+            --accent-dark: #7d2f15;
+            --code: #2d241c;
+            --code-bg: #f0e3d2;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            background: radial-gradient(circle at top, #fff7e8 0, var(--bg) 55%);
+            color: var(--ink);
+        }
+        a { color: var(--accent-dark); }
+        .shell {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        header {
+            margin-bottom: 24px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #23150f, #4c2615);
+            color: #fff7ec;
+            border-radius: 18px;
+        }
+        header h1 { margin: 0 0 8px; font-size: 2rem; }
+        header p { margin: 0; color: #f4d7c1; }
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        nav a {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            color: #fff7ec;
+        }
+        main {
+            display: grid;
+            gap: 20px;
+        }
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(64, 35, 17, 0.08);
+        }
+        .warn {
+            border-left: 4px solid var(--accent);
+            padding-left: 12px;
+            color: var(--accent-dark);
+        }
+        form {
+            display: grid;
+            gap: 12px;
+        }
+        input, textarea, button {
+            font: inherit;
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+        }
+        textarea { min-height: 120px; resize: vertical; }
+        button {
+            width: auto;
+            cursor: pointer;
+            background: var(--accent);
+            color: white;
+            border: 0;
+        }
+        pre, code {
+            font-family: Consolas, "Courier New", monospace;
+            color: var(--code);
+        }
+        pre {
+            overflow: auto;
+            padding: 14px;
+            background: var(--code-bg);
+            border-radius: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: #fffdf8;
+        }
+        .muted { color: var(--muted); }
+        .danger { color: #8d1d13; }
+        .success { color: #23613a; }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header>
+            <h1>Intentionally Vulnerable Flask App</h1>
+            <p>보안 실습과 스캐너 테스트를 위한 데모 앱입니다. 운영 환경에는 사용하면 안 됩니다.</p>
+            <nav>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('sqli') }}">SQLi</a>
+                <a href="{{ url_for('xss_reflected') }}">Reflected XSS</a>
+                <a href="{{ url_for('xss_stored') }}">Stored XSS</a>
+                <a href="{{ url_for('cmdi') }}">Command Injection</a>
+                <a href="{{ url_for('file_upload') }}">File Upload</a>
+                <a href="{{ url_for('dir_traversal') }}">Traversal</a>
+                <a href="{{ url_for('ssrf') }}">SSRF</a>
+                <a href="{{ url_for('csrf_page') }}">CSRF</a>
+                <a href="{{ url_for('login') }}">Login</a>
+            </nav>
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

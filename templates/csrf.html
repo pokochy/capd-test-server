@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}CSRF{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>CSRF Transfer Demo</h2>
+    <p>Current user: <strong>{{ current_user }}</strong></p>
+    <form method="post" action="{{ url_for('csrf_transfer') }}">
+        <label for="to_user">To User</label>
+        <input id="to_user" name="to_user" placeholder="attacker">
+        <label for="amount">Amount</label>
+        <input id="amount" name="amount" type="number" step="0.01" value="100">
+        <button type="submit">Transfer</button>
+    </form>
+    <p class="muted">사용자 전환: <a href="{{ url_for('csrf_set_user', username='alice') }}">alice</a> / <a href="{{ url_for('csrf_set_user', username='bob') }}">bob</a> / <a href="{{ url_for('csrf_set_user', username='admin') }}">admin</a></p>
+</section>
+<section class="panel">
+    <h3>Recent Transfers</h3>
+    <table>
+        <thead>
+            <tr><th>From</th><th>To</th><th>Amount</th><th>Created</th></tr>
+        </thead>
+        <tbody>
+            {% for transfer in transfers %}
+            <tr>
+                <td>{{ transfer.from_user }}</td>
+                <td>{{ transfer.to_user }}</td>
+                <td>{{ transfer.amount }}</td>
+                <td>{{ transfer.created_at }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="muted">No transfers yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

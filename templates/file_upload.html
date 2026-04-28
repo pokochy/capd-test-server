@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}File Upload{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>File Upload Demo</h2>
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('file_upload') }}">
+        <label for="file">Select File</label>
+        <input id="file" type="file" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    {% if success %}<p class="success">{{ success }}</p>{% endif %}
+    {% if error %}<p class="danger">{{ error }}</p>{% endif %}
+</section>
+<section class="panel">
+    <h3>Uploaded Files</h3>
+    <ul>
+        {% for filename in uploaded_files %}
+        <li><a href="{{ url_for('serve_upload', filename=filename) }}">{{ filename }}</a></li>
+        {% else %}
+        <li class="muted">No files uploaded yet.</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

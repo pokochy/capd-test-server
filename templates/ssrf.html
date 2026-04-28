@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}SSRF{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>SSRF Demo</h2>
+    <form method="get" action="{{ url_for('ssrf') }}">
+        <label for="url">URL</label>
+        <input id="url" name="url" value="{{ url or '' }}" placeholder="http://127.0.0.1:5000/debug">
+        <button type="submit">Fetch</button>
+    </form>
+</section>
+{% if status %}
+<section class="panel">
+    <h3>Status</h3>
+    <p>{{ status }}</p>
+</section>
+{% endif %}
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if response is not none %}
+<section class="panel">
+    <h3>Response Preview</h3>
+    <pre>{{ response }}</pre>
+</section>
+{% endif %}
+{% endblock %}

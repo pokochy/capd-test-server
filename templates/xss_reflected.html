@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Reflected XSS{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Reflected XSS Demo</h2>
+    <form method="get" action="{{ url_for('xss_reflected') }}">
+        <label for="q">Search</label>
+        <input id="q" name="q" value="{{ user_input }}" placeholder="<script>alert(1)</script>">
+        <button type="submit">Reflect Input</button>
+    </form>
+</section>
+<section class="panel">
+    <h3>Rendered Output</h3>
+    <div>{{ user_input | safe }}</div>
+</section>
+{% endblock %}

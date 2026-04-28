@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Command Injection{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Command Injection Demo</h2>
+    <form method="post" action="{{ url_for('cmdi') }}">
+        <label for="target">Target Host</label>
+        <input id="target" name="target" placeholder="127.0.0.1">
+        <button type="submit">Run ping</button>
+    </form>
+</section>
+{% if cmd %}
+<section class="panel">
+    <h3>Command</h3>
+    <pre>{{ cmd }}</pre>
+</section>
+{% endif %}
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if output %}
+<section class="panel">
+    <h3>Output</h3>
+    <pre>{{ output }}</pre>
+</section>
+{% endif %}
+{% endblock %}

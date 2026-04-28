@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Stored XSS{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Stored XSS Demo</h2>
+    <form method="post" action="{{ url_for('xss_stored') }}">
+        <label for="author">Author</label>
+        <input id="author" name="author" value="Anonymous">
+        <label for="content">Content</label>
+        <textarea id="content" name="content" placeholder="<script>alert('stored')</script>"></textarea>
+        <button type="submit">Post Comment</button>
+    </form>
+    {% if error %}<p class="danger">{{ error }}</p>{% endif %}
+</section>
+<section class="panel">
+    <h3>Comments</h3>
+    <table>
+        <thead>
+            <tr><th>Author</th><th>Content</th><th>Created</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for comment in comments %}
+            <tr>
+                <td>{{ comment.author }}</td>
+                <td>{{ comment.content | safe }}</td>
+                <td>{{ comment.created_at }}</td>
+                <td><a href="{{ url_for('delete_comment', comment_id=comment.id) }}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

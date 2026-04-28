@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Home - VulnApp{% endblock %}
+{% block content %}
+<section class="panel">
+    <p class="warn">이 애플리케이션은 의도적으로 취약합니다. 로컬 실습 용도로만 사용하세요.</p>
+</section>
+<section class="cards">
+    <article class="card">
+        <h2>Injection</h2>
+        <p class="muted">SQL Injection, Command Injection, SSRF를 실습할 수 있습니다.</p>
+    </article>
+    <article class="card">
+        <h2>XSS</h2>
+        <p class="muted">Reflected XSS와 Stored XSS 예제를 포함합니다.</p>
+    </article>
+    <article class="card">
+        <h2>Auth / CSRF</h2>
+        <p class="muted">취약한 로그인, CSRF 데모, 간단한 IDOR API가 있습니다.</p>
+    </article>
+    <article class="card">
+        <h2>File Issues</h2>
+        <p class="muted">파일 업로드와 디렉터리 트래버설을 시험할 수 있습니다.</p>
+    </article>
+</section>
+<section class="panel">
+    <h2>빠른 진입점</h2>
+    <table>
+        <thead>
+            <tr><th>기능</th><th>경로</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>SQL Injection</td><td><code>/sqli</code></td><td>사용자명 입력 기반 SQLi</td></tr>
+            <tr><td>Reflected XSS</td><td><code>/xss/reflected</code></td><td>입력값을 그대로 출력</td></tr>
+            <tr><td>Stored XSS</td><td><code>/xss/stored</code></td><td>댓글 저장 후 렌더링</td></tr>
+            <tr><td>Command Injection</td><td><code>/cmdi</code></td><td>ping 명령 조합</td></tr>
+            <tr><td>SSRF</td><td><code>/ssrf</code></td><td>서버 측에서 URL 요청</td></tr>
+        </tbody>
+    </table>
+</section>
+{% endblock %}

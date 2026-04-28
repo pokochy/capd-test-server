@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Broken Authentication Demo</h2>
+    <form method="post" action="{{ url_for('login') }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" placeholder="admin">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="admin123">
+        <button type="submit">Login</button>
+    </form>
+    {% if error %}<p class="danger">{{ error }}</p>{% endif %}
+    {% if session.get('logged_in') %}
+    <p class="success">Logged in as {{ session.get('username') }} ({{ session.get('role') }}). <a href="{{ url_for('logout') }}">Logout</a></p>
+    {% endif %}
+</section>
+{% endblock %}

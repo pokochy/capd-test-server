@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Directory Traversal{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Directory Traversal Demo</h2>
+    <form method="get" action="{{ url_for('dir_traversal') }}">
+        <label for="file">Filename</label>
+        <input id="file" name="file" value="{{ filename or '' }}" placeholder="../../app.py">
+        <button type="submit">Read File</button>
+    </form>
+</section>
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if content is not none %}
+<section class="panel">
+    <h3>Content</h3>
+    <pre>{{ content }}</pre>
+</section>
+{% endif %}
+{% endblock %}
