@@ -138,9 +138,14 @@
             <nav>
                 <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('sqli') }}">SQLi</a>
+                <a href="{{ url_for('ssti') }}">SSTI</a>
+                <a href="{{ url_for('nosqli') }}">NoSQLi</a>
+                <a href="{{ url_for('ldap_injection') }}">LDAPi</a>
+                <a href="{{ url_for('xpath_injection') }}">XPathi</a>
                 <a href="{{ url_for('xss_reflected') }}">Reflected XSS</a>
                 <a href="{{ url_for('xss_stored') }}">Stored XSS</a>
                 <a href="{{ url_for('cmdi') }}">Command Injection</a>
+                <a href="{{ url_for('header_injection') }}">Header Injection</a>
                 <a href="{{ url_for('file_upload') }}">File Upload</a>
                 <a href="{{ url_for('dir_traversal') }}">Traversal</a>
                 <a href="{{ url_for('ssrf') }}">SSRF</a>

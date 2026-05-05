@@ -2,12 +2,12 @@
 {% block title %}Home - VulnApp{% endblock %}
 {% block content %}
 <section class="panel">
-    <p class="warn">이 애플리케이션은 의도적으로 취약합니다. 로컬 실습 용도로만 사용하세요.</p>
+    <p class="warn">이 애플리케이션은 의도적으로 취약합니다. 로컬 또는 격리된 실습 환경에서만 사용하세요.</p>
 </section>
 <section class="cards">
     <article class="card">
         <h2>Injection</h2>
-        <p class="muted">SQL Injection, Command Injection, SSRF를 실습할 수 있습니다.</p>
+        <p class="muted">SQLi, SSTI, NoSQLi, LDAPi, XPathi, Command Injection, Header Injection, SSRF를 실습할 수 있습니다.</p>
     </article>
     <article class="card">
         <h2>XSS</h2>
@@ -29,11 +29,18 @@
             <tr><th>기능</th><th>경로</th><th>설명</th></tr>
         </thead>
         <tbody>
-            <tr><td>SQL Injection</td><td><code>/sqli</code></td><td>사용자명 입력 기반 SQLi</td></tr>
+            <tr><td>SQL Injection</td><td><code>/sqli</code></td><td>문자열 결합 기반 SQLite 쿼리</td></tr>
+            <tr><td>SSTI</td><td><code>/ssti</code></td><td>사용자 입력을 Jinja 템플릿으로 렌더링</td></tr>
+            <tr><td>NoSQL Injection</td><td><code>/nosqli</code></td><td>JSON 연산자 기반 인메모리 사용자 조회</td></tr>
+            <tr><td>LDAP Injection</td><td><code>/ldap</code></td><td>사용자 입력으로 LDAP 필터 구성</td></tr>
+            <tr><td>XPath Injection</td><td><code>/xpath</code></td><td>XML 사용자 데이터에 대한 XPath 로그인식 구성</td></tr>
+            <tr><td>Command Injection</td><td><code>/cmdi</code></td><td>ping 명령 조합</td></tr>
+            <tr><td>Header Injection</td><td><code>/headers</code></td><td>응답 헤더 이름과 값을 사용자 입력으로 설정</td></tr>
             <tr><td>Reflected XSS</td><td><code>/xss/reflected</code></td><td>입력값을 그대로 출력</td></tr>
             <tr><td>Stored XSS</td><td><code>/xss/stored</code></td><td>댓글 저장 후 렌더링</td></tr>
-            <tr><td>Command Injection</td><td><code>/cmdi</code></td><td>ping 명령 조합</td></tr>
             <tr><td>SSRF</td><td><code>/ssrf</code></td><td>서버 측에서 URL 요청</td></tr>
+            <tr><td>Directory Traversal</td><td><code>/traversal</code></td><td>검증 없는 파일 경로 읽기</td></tr>
+            <tr><td>File Upload</td><td><code>/upload</code></td><td>업로드 파일 저장 및 서빙 검증 부재</td></tr>
         </tbody>
     </table>
 </section>

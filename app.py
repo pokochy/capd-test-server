@@ -7,12 +7,15 @@ DO NOT deploy in production or expose to public internet.
 ================================================================
 """
 
+import json
 import os
+import re
 import sqlite3
 import subprocess
+import xml.etree.ElementTree as ET
 import requests
 from flask import (
-    Flask, render_template, request, redirect, url_for,
+    Flask, render_template, render_template_string, request, redirect, url_for,
     session, g, jsonify, send_file, make_response
 )
 from werkzeug.utils import secure_filename
@@ -23,6 +26,99 @@ app.secret_key = "super_insecure_secret_key_1234"  # 취약: 하드코딩된 시
 DATABASE = "vuln_app.db"
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+LAB_USERS = [
+    {
+        "id": 1,
+        "username": "admin",
+        "password": "admin123",
+        "email": "admin@vuln-app.local",
+        "role": "admin",
+        "department": "ops",
+    },
+    {
+        "id": 2,
+        "username": "alice",
+        "password": "password1",
+        "email": "alice@example.com",
+        "role": "user",
+        "department": "sales",
+    },
+    {
+        "id": 3,
+        "username": "bob",
+        "password": "qwerty",
+        "email": "bob@example.com",
+        "role": "user",
+        "department": "engineering",
+    },
+    {
+        "id": 4,
+        "username": "charlie",
+        "password": "letmein",
+        "email": "charlie@example.com",
+        "role": "user",
+        "department": "support",
+    },
+]
+
+XML_DIRECTORY = """<users>
+  <user id="1" username="admin" password="admin123" email="admin@vuln-app.local" role="admin" />
+  <user id="2" username="alice" password="password1" email="alice@example.com" role="user" />
+  <user id="3" username="bob" password="qwerty" email="bob@example.com" role="user" />
+  <user id="4" username="charlie" password="letmein" email="charlie@example.com" role="user" />
+</users>"""
+
+
+def nosql_condition_matches(value, condition):
+    if isinstance(condition, dict):
+        for operator, expected in condition.items():
+            if operator == "$ne":
+                if value == expected:
+                    return False
+            elif operator == "$regex":
+                if not re.search(str(expected), str(value)):
+                    return False
+            elif operator == "$in":
+                if not isinstance(expected, list) or value not in expected:
+                    return False
+            elif operator == "$exists":
+                if bool(expected) != (value is not None):
+                    return False
+            elif operator == "$gt":
+                if str(value) <= str(expected):
+                    return False
+            else:
+                return False
+        return True
+
+    return value == condition
+
+
+def ldap_pattern_matches(value, pattern):
+    if pattern == "":
+        return value == ""
+    regex = "^" + re.escape(pattern).replace("\\*", ".*") + "$"
+    return re.match(regex, value) is not None
+
+
+def looks_like_ldap_breakout(value):
+    lowered = value.lower()
+    breakout_tokens = (")(", "(|", "(&", "*)", "uid=*", "objectclass=*")
+    return any(token in lowered for token in breakout_tokens)
+
+
+def looks_like_xpath_bypass(value):
+    compact = re.sub(r"\s+", "", value.lower())
+    bypass_tokens = (
+        "or'1'='1",
+        'or"1"="1',
+        "or1=1",
+        "ortrue()",
+        "or@",
+        "//*",
+    )
+    return any(token in compact for token in bypass_tokens)
 
 # ──────────────────────────────────────────────
 # DB 유틸리티
@@ -376,6 +472,170 @@ def ssrf():
 # ──────────────────────────────────────────────
 # 8. CSRF
 # ──────────────────────────────────────────────
+
+@app.route("/ssti", methods=["GET", "POST"])
+def ssti():
+    template_source = request.values.get("template", "")
+    name = request.values.get("name", "guest")
+    rendered = None
+    error = None
+
+    if request.method == "POST" or request.args:
+        if template_source:
+            try:
+                # Intentionally vulnerable: user input is executed as a Jinja template.
+                rendered = render_template_string(
+                    template_source,
+                    name=name,
+                    users=LAB_USERS,
+                    request=request,
+                    config=app.config,
+                )
+            except Exception as e:
+                error = str(e)
+
+    return render_template(
+        "ssti.html",
+        template_source=template_source,
+        name=name,
+        rendered=rendered,
+        error=error,
+    )
+
+
+@app.route("/nosqli", methods=["GET", "POST"])
+def nosqli():
+    default_query = '{\n  "username": "admin",\n  "password": "admin123"\n}'
+    query_text = request.values.get("query", default_query)
+    parsed_query = None
+    result = None
+    error = None
+
+    if request.method == "POST" or request.args:
+        try:
+            parsed_query = json.loads(query_text)
+            if not isinstance(parsed_query, dict):
+                raise ValueError("Top-level query must be a JSON object.")
+
+            result = [
+                user for user in LAB_USERS
+                if all(
+                    nosql_condition_matches(user.get(field), condition)
+                    for field, condition in parsed_query.items()
+                )
+            ]
+        except Exception as e:
+            error = str(e)
+
+    return render_template(
+        "nosqli.html",
+        query_text=query_text,
+        parsed_query=parsed_query,
+        result=result,
+        error=error,
+    )
+
+
+@app.route("/ldap", methods=["GET", "POST"])
+def ldap_injection():
+    username = request.values.get("username", "")
+    password = request.values.get("password", "")
+    ldap_filter = None
+    result = None
+
+    if request.method == "POST" or request.args:
+        ldap_filter = f"(&(uid={username})(userPassword={password}))"
+        combined = f"{username}{password}"
+
+        if looks_like_ldap_breakout(combined):
+            result = LAB_USERS
+        else:
+            result = [
+                user for user in LAB_USERS
+                if ldap_pattern_matches(user["username"], username)
+                and ldap_pattern_matches(user["password"], password)
+            ]
+
+    return render_template(
+        "ldap.html",
+        username=username,
+        password=password,
+        ldap_filter=ldap_filter,
+        result=result,
+    )
+
+
+@app.route("/xpath", methods=["GET", "POST"])
+def xpath_injection():
+    username = request.values.get("username", "")
+    password = request.values.get("password", "")
+    xpath_query = None
+    result = None
+    error = None
+
+    if request.method == "POST" or request.args:
+        xpath_query = (
+            "/users/user[@username='"
+            f"{username}' and @password='{password}']"
+        )
+        try:
+            ET.fromstring(XML_DIRECTORY)
+            if looks_like_xpath_bypass(username) or looks_like_xpath_bypass(password):
+                result = LAB_USERS
+            else:
+                result = [
+                    user for user in LAB_USERS
+                    if user["username"] == username and user["password"] == password
+                ]
+        except Exception as e:
+            error = str(e)
+
+    return render_template(
+        "xpath.html",
+        username=username,
+        password=password,
+        xpath_query=xpath_query,
+        xml_source=XML_DIRECTORY,
+        result=result,
+        error=error,
+    )
+
+
+@app.route("/crlf", methods=["GET", "POST"])
+@app.route("/headers", methods=["GET", "POST"])
+def header_injection():
+    header_name = request.values.get("name", "X-Lab-User")
+    header_value = request.values.get("value", "")
+    body = request.values.get("body", "header injection lab")
+    submitted = request.method == "POST" or bool(request.args)
+    header_error = None
+
+    if submitted:
+        try:
+            response = make_response(
+                render_template(
+                    "header_injection.html",
+                    header_name=header_name,
+                    header_value=header_value,
+                    body=body,
+                    header_error=None,
+                    header_applied=True,
+                )
+            )
+            response.headers[header_name] = header_value
+            return response
+        except Exception as e:
+            header_error = str(e)
+
+    return render_template(
+        "header_injection.html",
+        header_name=header_name,
+        header_value=header_value,
+        body=body,
+        header_error=header_error,
+        header_applied=False,
+    )
+
 
 @app.route("/csrf", methods=["GET"])
 def csrf_page():

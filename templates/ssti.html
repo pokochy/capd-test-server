@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}SSTI{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Server-Side Template Injection Demo</h2>
+    <form method="post" action="{{ url_for('ssti') }}">
+        <label for="name">Name</label>
+        <input id="name" name="name" value="{{ name or '' }}" placeholder="guest">
+        <label for="template">Template</label>
+        <textarea id="template" name="template" placeholder="Hello {{ '{{ name }}' }}. 7 * 7 = {{ '{{ 7 * 7 }}' }}">{{ template_source or '' }}</textarea>
+        <button type="submit">Render</button>
+    </form>
+</section>
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if rendered is not none %}
+<section class="panel">
+    <h3>Rendered Output</h3>
+    <pre>{{ rendered }}</pre>
+</section>
+{% endif %}
+{% endblock %}

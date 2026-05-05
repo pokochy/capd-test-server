@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}XPath Injection{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>XPath Injection Demo</h2>
+    <form method="post" action="{{ url_for('xpath_injection') }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" value="{{ username or '' }}" placeholder="admin">
+        <label for="password">Password</label>
+        <input id="password" name="password" value="{{ password or '' }}" placeholder="admin123">
+        <button type="submit">Run XPath Login</button>
+    </form>
+</section>
+{% if xpath_query %}
+<section class="panel">
+    <h3>XPath Query</h3>
+    <pre>{{ xpath_query }}</pre>
+</section>
+{% endif %}
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if result is not none %}
+<section class="panel">
+    <h3>Result</h3>
+    <pre>{{ result | tojson(indent=2) }}</pre>
+</section>
+{% endif %}
+<section class="panel">
+    <h3>XML Source</h3>
+    <pre>{{ xml_source }}</pre>
+</section>
+{% endblock %}

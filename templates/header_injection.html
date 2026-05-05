@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Header Injection{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>Header Injection Demo</h2>
+    <form method="post" action="{{ url_for('header_injection') }}">
+        <label for="name">Header Name</label>
+        <input id="name" name="name" value="{{ header_name or '' }}" placeholder="X-Lab-User">
+        <label for="value">Header Value</label>
+        <textarea id="value" name="value" placeholder="alice">{{ header_value or '' }}</textarea>
+        <label for="body">Response Body</label>
+        <input id="body" name="body" value="{{ body or '' }}" placeholder="header injection lab">
+        <button type="submit">Send Response</button>
+    </form>
+</section>
+{% if header_error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ header_error }}</pre>
+</section>
+{% endif %}
+{% if header_applied %}
+<section class="panel">
+    <h3>Applied Header</h3>
+    <pre>{{ header_name }}: {{ header_value }}</pre>
+</section>
+{% endif %}
+<section class="panel">
+    <h3>Body</h3>
+    <pre>{{ body }}</pre>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}LDAP Injection{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>LDAP Injection Demo</h2>
+    <form method="post" action="{{ url_for('ldap_injection') }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" value="{{ username or '' }}" placeholder="admin">
+        <label for="password">Password</label>
+        <input id="password" name="password" value="{{ password or '' }}" placeholder="admin123">
+        <button type="submit">Search Directory</button>
+    </form>
+</section>
+{% if ldap_filter %}
+<section class="panel">
+    <h3>LDAP Filter</h3>
+    <pre>{{ ldap_filter }}</pre>
+</section>
+{% endif %}
+{% if result is not none %}
+<section class="panel">
+    <h3>Result</h3>
+    <pre>{{ result | tojson(indent=2) }}</pre>
+</section>
+{% endif %}
+{% endblock %}

@@ -163,3 +163,13 @@ charlie / letmein
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [DVWA](https://github.com/digininja/DVWA)
 - [PortSwigger Web Security Academy](https://portswigger.net/web-security)
+
+## 추가된 인젝션 실습
+
+| 기능 | 경로 | 설명 |
+|---|---|---|
+| SSTI | `/ssti` | 사용자 입력을 Jinja `render_template_string`으로 렌더링합니다. |
+| NoSQL Injection | `/nosqli` | `$ne`, `$regex`, `$in`, `$exists` 같은 JSON 쿼리 연산자를 받습니다. |
+| LDAP Injection | `/ldap` | 사용자명과 비밀번호로 취약한 LDAP 스타일 필터를 구성합니다. |
+| XPath Injection | `/xpath` | 샘플 XML 데이터에 대해 취약한 XPath 스타일 로그인식을 구성합니다. |
+| Header Injection | `/headers`, `/crlf` | 사용자 입력으로 응답 헤더 이름과 값을 설정합니다. |

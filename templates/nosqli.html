@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}NoSQL Injection{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>NoSQL Injection Demo</h2>
+    <form method="post" action="{{ url_for('nosqli') }}">
+        <label for="query">JSON Query</label>
+        <textarea id="query" name="query">{{ query_text }}</textarea>
+        <button type="submit">Run Query</button>
+    </form>
+</section>
+{% if parsed_query %}
+<section class="panel">
+    <h3>Parsed Query</h3>
+    <pre>{{ parsed_query | tojson(indent=2) }}</pre>
+</section>
+{% endif %}
+{% if error %}
+<section class="panel">
+    <h3 class="danger">Error</h3>
+    <pre>{{ error }}</pre>
+</section>
+{% endif %}
+{% if result is not none %}
+<section class="panel">
+    <h3>Result</h3>
+    <pre>{{ result | tojson(indent=2) }}</pre>
+</section>
+{% endif %}
+{% endblock %}
